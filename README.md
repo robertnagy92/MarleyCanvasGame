@@ -21,7 +21,8 @@ The game ends when the player looses all lives at his disposal.
 ## Links
 
 ### Trello
-https://trello.com/b/hvoaGDyq/marley-html5-canvas
+[Link](https://trello.com/b/hvoaGDyq/marley-html5-canvas)
 ### Git
-
+[Coming Soon]
 ### Slides
+[Coming Soon]
