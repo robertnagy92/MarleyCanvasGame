@@ -8,6 +8,17 @@ canvas {
     display: block;
 }
 
+body {
+    background-image: url('./images/GameStartImage.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #464646;
+
+
+}
+
 /* Canvas fully responsive */
 #game {
     width: 100%;
