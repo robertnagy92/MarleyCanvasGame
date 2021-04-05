@@ -26,22 +26,90 @@ function shadowInterval(){
     }
 }
 
-let handle = setInterval(shadowInterval, 1300);
+let handle = setInterval(shadowInterval, 1200);
 // clearing canvas and setting new background image
 function clearCanvas(){
     clearInterval(handle)
     ctx.clearRect(0, 0, 640, 360)
     body.style.backgroundImage = "url('./images/background0.png')"
-
+    Start();
 }
 
 // upon pressing Enter game starts
-function move(e){
+function enterGame(e){
     if(e.keyCode === 13) {
         clearCanvas()
     }
 }
-document.onkeydown = move;
+document.onkeydown = enterGame;
+
+let score, highscore, player, gravity, obstacles, gameSpeed;
+ 
+let keys = [];
+
+class Player {
+    constructor(x,y,width,height,color){
+        this.x = x;
+        this.y = y;
+        this.width = width
+        this.height = height;
+        this.color = color;
+
+        this.directionY = 0; // Jump velocity
+        this.jumpForce = 15;
+        this.originalHeight = height;
+        this.grounded = false;
+    }
+
+    Animate () {
+     //Gravity
+     if(this.y + this.height < canvas.height) {
+         this.directionY += gravity;
+         this.grounded = false;
+     } else {
+         this.directionY = 0;
+         this.grounded = true;
+         this.y = canvas.height - this.height
+     }
+
+     this.y += this.directionY
+
+        this.Draw();
+    }
+
+    Draw () {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.width, this.height)
+        ctx.closePath();
+    }
+}
+
+// upon Start draw the player to the canvas
+function Start () {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    ctx.font = "20px sans-serif";
+
+    gameSpeed = 3;
+    gravity = 1;
+
+    // score = 0;
+    // highscore = 0;
+
+    player = new Player(25, 0, 50, 50, "#FF5858");
+    requestAnimationFrame(Update);
+}
+
+//Update animation frame & clear canvas upon change
+function Update () {
+    requestAnimationFrame(Update);
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    player.Animate();
+    player.x++
+}
 
 
 
