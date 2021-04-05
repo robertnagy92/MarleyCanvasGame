@@ -29,3 +29,8 @@ body {
     z-index: -1;
     border: 5px solid black;    
 }
+
+div {
+    margin: 1rem
+}
+  
