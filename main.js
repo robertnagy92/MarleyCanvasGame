@@ -44,8 +44,9 @@ function enterGame(e){
 document.onkeydown = enterGame;
 
 let score, highscore, player, gravity, obstacles, gameSpeed;
- 
-let keys = [];
+let keys = {};
+
+
 
 class Player {
     constructor(x,y,width,height,color){
@@ -59,9 +60,17 @@ class Player {
         this.jumpForce = 15;
         this.originalHeight = height;
         this.grounded = false;
+        this.jumpTimer = 0;
     }
 
     Animate () {
+     //Jump
+     if(keys['Space'] || keys['ArrowUp']){
+        this.Jump();
+    } else {
+        this.jumpTimer = 0;
+    }
+    this.y += this.directionY
      //Gravity
      if(this.y + this.height < canvas.height) {
          this.directionY += gravity;
@@ -72,9 +81,20 @@ class Player {
          this.y = canvas.height - this.height
      }
 
-     this.y += this.directionY
-
         this.Draw();
+    }
+
+   //Jump height, longer keypress generates more jumpforce
+    Jump () {
+     if(this.grounded && this.jumpTimer == 0) {
+         this.jumpTimer = 1;
+         this.directionY =- this.jumpForce;
+     } else if (this.jumpTimer > 0 && this.jumpTimer < 15){
+         this.jumpTimer++;
+         this.directionY =- this.jumpForce - (this.jumpTimer / 50)
+     }
+
+     
     }
 
     Draw () {
@@ -108,9 +128,16 @@ function Update () {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     player.Animate();
-    player.x++
+    
 }
 
+//Event Listeners
+document.addEventListener("keydown", function(event){
+    keys[event.code] = true;
+})
+document.addEventListener("keyup", function(event){
+    keys[event.code] = false;
+})
 
 
 
