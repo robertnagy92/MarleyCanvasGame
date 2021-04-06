@@ -43,7 +43,7 @@ function enterGame(e){
 }
 document.onkeydown = enterGame;
 
-let score, highscore, player, gravity, gameSpeed;
+let score, scoreText, highscore, highscoreText, player, gravity, gameSpeed;
 let obstacles = [];
 let keys = {};
 
@@ -60,6 +60,8 @@ class Player {
         this.originalHeight = height;
         this.grounded = false;
         this.jumpTimer = 0;
+    
+    
     }
 
     Animate () {
@@ -69,6 +71,7 @@ class Player {
     } else {
         this.jumpTimer = 0;
     }
+
 
     if(keys["KeyS"] || keys["ArrowDown"]){
         this.height = this.originalHeight / 2;
@@ -135,10 +138,30 @@ class Obstacle {
         ctx.closePath();
     }
 }
+
+class Score {
+    constructor(score,x,y,alignment,color,size){
+        this.score = score;
+        this.x = x;
+        this.y = y;
+        this.alignment = alignment;
+        this.color = color;
+        this.size = size;
+    }
+
+    Draw () {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.font = this.size + "px sans-serif";
+        ctx.textAlign = this.alignment;
+        ctx.fillText(this.score, this.x, this.y)
+        ctx.closePath();
+    }
+}
 //Game Functions
 //Spawn Obstacles
 function SpawnObstacle () {
-    let size = RandomIntRange(20, 70); // random size of the spawned obstacle
+    let size = RandomIntRange(20, 100); // random size of the spawned obstacle
     // console.log(size);
     let type = RandomIntRange(0,1);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#2484E4" );
@@ -163,11 +186,18 @@ function Start () {
     gameSpeed = 3;
     gravity = 1;
 
-    // score = 0;
-    // highscore = 0;
+    score = 0;
+    highscore = 0;
 
-    player = new Player(25, 0, 50, 50, "#FF5858");
+    player = new Player(200, 0, 50, 50, "#FF5858");
+
+    scoreText = new Score("Score: " + scoreText, 400, 30, "left", "#212121","20")
+
+    highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 25, "right", "#212121", "20")
+
     requestAnimationFrame(Update);
+
+
 }
 
 //Update animation frame & clear canvas upon change
@@ -193,11 +223,40 @@ function Update () {
     //Spawn obstacles
     for(let i = 0; i < obstacles.length; i++){
         let o = obstacles[i]
+
+    //Collision detection
+     if(o.x + o.width < 0){
+         obstacles.splice(i,1);
+     }    
+
+     if(player.x < o.x + o.width && player.x + player.width > o.x && player.y < o.y + o.height && player.y + player.height > o.y){
+         obstacles = [];
+         score = 0;
+         spawnTimer = initialSpawnTimer;
+         gameSpeed = 3;
+         window.alert("Game Over")
+         
+         
+     }
        
         o.Update();
     }
 
     player.Animate();
+
+    score++;
+    scoreText.score = "Score " + score;
+    scoreText.Draw();
+    
+    if(score > highscore) {
+        highscore = score;
+        highscoreText.score = "Highscore: " + highscore;
+    }
+    highscoreText.Draw();
+
+    gameSpeed += 0.003;
+
+    
     
 }
 
