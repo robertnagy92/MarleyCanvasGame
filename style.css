@@ -9,14 +9,13 @@ canvas {
 }
 
 body {
+
     background-image: url('./images/GameStartImage.png');
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     background-color: #464646;
-
-
 }
 
 /* Canvas fully responsive */
@@ -30,7 +29,20 @@ body {
     border: 5px solid black;    
 }
 
-div {
+.audioButtons {
     margin: 1rem
 }
+
+/* .cloud.one {
+    top: 50%;
+    width: 300px;
+    height: 100px;
+}
+
+.cloud {
+   position: absolute;
+   left: 0;
+   background: wheat;
+   border-radius: 1000px;
+} */
   

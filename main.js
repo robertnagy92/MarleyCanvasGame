@@ -4,46 +4,51 @@ let body = document.getElementById("main")
 let ctx = canvas.getContext("2d")
 
 //Background page and emphasis on start game every second
-ctx.shadowColor="black";
-ctx.shadowBlur=7;
-ctx.lineWidth=5;
-ctx.fillStyle = "white";
-ctx.textAlign = "center";
-ctx.textBaseline="top";
-ctx.font = "1.3rem Arial";
-ctx.fillText("Marley", canvas.width/2, canvas.height/2);
+function startPage(){
+    //Game Title
+    ctx.shadowColor="black";
+    ctx.shadowBlur=3;
+    ctx.lineWidth=3;
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline="top";
+    ctx.font = "1.3rem Arial";
+    ctx.fillText("Marley", canvas.width/2, canvas.height/2);
 
-function shadowInterval(){
+    //Game press enter font
     let count = 1000;
     count--;
     if(count % 2 === 1){
     ctx.shadowColor="black";
-    ctx.shadowBlur=7;
-    ctx.lineWidth=5;
+    ctx.shadowBlur=4;
+    ctx.lineWidth=4;
     ctx.font = "1rem Arial";
     ctx.fillStyle = "white"
     ctx.fillText("Press Enter To Start", canvas.width/2, canvas.height/2 + 50);
     }
 }
 
-let handle = setInterval(shadowInterval, 1200);
+let handle = setInterval(startPage, 1200);
 // clearing canvas and setting new background image
 function clearCanvas(){
-    clearInterval(handle)
-    ctx.clearRect(0, 0, 640, 360)
-    body.style.backgroundImage = "url('./images/background0.png')"
-    Start();
+    clearInterval(handle);
+    ctx.clearRect(0, 0, 640, 360);
+    // body.style.background = "skyblue";
+    body.style.backgroundImage = "url('./images/background0.png')"    
 }
 
-// upon pressing Enter game starts
+// upon pressing Enter game clears startpage and starts
 function enterGame(e){
     if(e.keyCode === 13) {
-        clearCanvas()
+        clearCanvas();
+        Start();
     }
 }
 document.onkeydown = enterGame;
 
+//Variables
 let score, scoreText, highscore, highscoreText, player, gravity, gameSpeed;
+let cloud, cloud_x;
 let obstacles = [];
 let keys = {};
 
@@ -66,7 +71,7 @@ class Player {
 
     Animate () {
      //Jump
-     if(keys['KeyW'] || keys['ArrowUp']){
+     if(keys['Space'] || keys['ArrowUp']){
         this.Jump();
     } else {
         this.jumpTimer = 0;
@@ -102,10 +107,7 @@ class Player {
          this.jumpTimer++;
          this.directionY =- this.jumpForce - (this.jumpTimer / 50)
      }
-
-     
     }
-
     Draw () {
         ctx.beginPath();
         ctx.fillStyle = this.color;
@@ -121,16 +123,13 @@ class Obstacle {
        this.width = width;
        this.height = height;
        this.color = color;
-
        this.directionX = -gameSpeed;
     }
-
     Update () {
         this.x += this.directionX;
         this.Draw();
         this.directionX = -gameSpeed;
     }
-
     Draw () {
         ctx.beginPath();
         ctx.fillStyle = this.color;
@@ -148,7 +147,6 @@ class Score {
         this.color = color;
         this.size = size;
     }
-
     Draw () {
         ctx.beginPath();
         ctx.fillStyle = this.color;
@@ -158,20 +156,36 @@ class Score {
         ctx.closePath();
     }
 }
+class Instructions {
+    constructor(text,x,y,alignment, color, size){
+    this.text = text;
+    this.x = x;
+    this.y = y;
+    this.alignment = alignment;
+    this.color = color;
+    this.size = size;
+    }
+    Draw () {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.font = this.size + "px sans-serif";
+        ctx.textAlign = this.alignment;
+        ctx.fillText(this.text, this.x, this.y);
+        ctx.closePath();
+    }
+}
 //Game Functions
 //Spawn Obstacles
 function SpawnObstacle () {
     let size = RandomIntRange(20, 100); // random size of the spawned obstacle
     // console.log(size);
-    let type = RandomIntRange(0,1);
+    let type = RandomIntRange(0,2);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#2484E4" );
-
     if(type == 1) {
         obstacle.y -= player.originalHeight - 10;
     }
     obstacles.push(obstacle);
 }
-
 
 function RandomIntRange(min, max) {
     return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (20, 70)
@@ -188,13 +202,18 @@ function Start () {
 
     score = 0;
     highscore = 0;
+    if(localStorage.getItem("highscore")){
+        highscore = localStorage.getItem("highscore")
+    }
 
     player = new Player(200, 0, 50, 50, "#FF5858");
 
-    scoreText = new Score("Score: " + scoreText, 400, 30, "left", "#212121","20")
+    scoreText = new Score("Score: " + scoreText, canvas.width - 400, 28, "left", "#212121","20")
 
-    highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 25, "right", "#212121", "20")
-
+    highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 28, "right", "#212121", "20");
+    
+    playInstructions = new Instructions("Jump = UpArrow",canvas.width - 700, 28, "left", "red", "20");
+    playInstructions2 = new Instructions("Duck = DownArrow",canvas.width - 700, 53, "left", "red", "20");
     requestAnimationFrame(Update);
 
 
@@ -233,17 +252,15 @@ function Update () {
          obstacles = [];
          score = 0;
          spawnTimer = initialSpawnTimer;
-         gameSpeed = 3;
+         gameSpeed = 5;
+         //Store the highscore in local storage upon collision
+         window.localStorage.setItem("highscore", highscore);
          window.alert("Game Over")
-         
-         
      }
-       
-        o.Update();
+       o.Update();
     }
 
     player.Animate();
-
     score++;
     scoreText.score = "Score " + score;
     scoreText.Draw();
@@ -253,11 +270,10 @@ function Update () {
         highscoreText.score = "Highscore: " + highscore;
     }
     highscoreText.Draw();
+    playInstructions.Draw();
+    playInstructions2.Draw();
 
-    gameSpeed += 0.003;
-
-    
-    
+    gameSpeed += 0.003; 
 }
 
 //Event Listeners
@@ -267,6 +283,7 @@ document.addEventListener("keydown", function(event){
 document.addEventListener("keyup", function(event){
     keys[event.code] = false;
 })
+
 
 
 
