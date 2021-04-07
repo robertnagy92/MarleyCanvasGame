@@ -2,6 +2,7 @@ let canvas = document.getElementById("game")
 let audio = document.getElementsByTagName("audio")
 let body = document.getElementById("main")
 let ctx = canvas.getContext("2d")
+let auto = document.getElementById('player')
 
 //Background page and emphasis on start game every second
 function startPage(){
@@ -42,6 +43,7 @@ function enterGame(e){
     if(e.keyCode === 13) {
         clearCanvas();
         Start();
+        auto.play();
     }
 }
 document.onkeydown = enterGame;
