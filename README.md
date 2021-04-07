@@ -64,6 +64,6 @@ marley.js
 ### Trello
 [Link](https://trello.com/b/hvoaGDyq/marley-html5-canvas)
 ### Git
-[Coming Soon]
+[GameLink](https://robertnagy92.github.io/MarleyCanvasGame/)
 ### Slides
-[Coming Soon]
+[Link](https://docs.google.com/presentation/d/1FfEVDZh7cn4069b_DOMj1QYOm3VBNkVAe0_jeXwpK7E/edit?usp=sharing)
