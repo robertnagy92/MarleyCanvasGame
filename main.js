@@ -28,7 +28,6 @@ function startPage(){
     ctx.fillText("Press Enter To Start", canvas.width/2, canvas.height/2 + 50);
     }
 }
-
 let handle = setInterval(startPage, 1200);
 // clearing canvas and setting new background image
 function clearCanvas(){
@@ -49,7 +48,6 @@ document.onkeydown = enterGame;
 
 //Variables
 let score, scoreText, highscore, highscoreText, player, gravity, gameSpeed;
-let cloud, cloud_x;
 let obstacles = [];
 let keys = {};
 
@@ -66,6 +64,9 @@ class Player {
         this.originalHeight = height;
         this.grounded = false;
         this.jumpTimer = 0;
+        this.dog = new Image();
+        this.dog.src = './images/dog1.png'
+
     }
 
     Animate () {
@@ -75,7 +76,6 @@ class Player {
     } else {
         this.jumpTimer = 0;
     }
-
 
     if(keys["KeyS"] || keys["ArrowDown"]){
         this.height = this.originalHeight / 2;
@@ -107,10 +107,7 @@ class Player {
      }
     }
     Draw () {
-        ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height)
-        ctx.closePath();
+        ctx.drawImage(this.dog, this.x, this.y, this.width, this.height)
     }
 }
 
@@ -129,10 +126,13 @@ class Obstacle {
         this.directionX = -gameSpeed;
     }
     Draw () {
-        ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height)
-        ctx.closePath();
+         ctx.beginPath();
+         ctx.shadowColor="grey";
+         ctx.shadowBlur=1;
+         ctx.lineWidth=3;
+         ctx.fillStyle = this.color;
+         ctx.fillRect(this.x, this.y, this.width, this.height)
+         ctx.closePath();
     }
 }
 
@@ -177,9 +177,13 @@ class Instructions {
 function SpawnObstacle () {
     let size = RandomIntRange(20, 100); // random size of the spawned obstacle
     let type = RandomIntRange(0,2);
-    let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#2484E4" );
+    let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#FB4D3D");
+    let obstacle2 = new Obstacle(canvas.width + size + 400, canvas.height - size, size, size, "#EAC435");
     if(type == 1) {
         obstacle.y -= player.originalHeight - 10; //Obstacles that can be ducked
+    }
+    if(type == 2) {
+        obstacles.push(obstacle2)
     }
     obstacles.push(obstacle);
 }
@@ -244,7 +248,7 @@ function Update () {
          gameSpeed = 5;
          //Store the highscore in local storage upon collision
          window.localStorage.setItem("highscore", highscore);
-         window.alert("Game Over")
+         window.alert("Game Over (press OK to restart)") 
      }
        o.Update();
     }
