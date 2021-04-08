@@ -7,14 +7,14 @@ let auto = document.getElementById('player')
 //Background page and emphasis on start game every second
 function startPage(){
     //Game Title
-    ctx.shadowColor="black";
+    ctx.shadowColor="red";
     ctx.shadowBlur=3;
     ctx.lineWidth=3;
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.textBaseline="top";
-    ctx.font = "1.3rem Arial";
-    ctx.fillText("Marley", canvas.width/2, canvas.height/2);
+    ctx.font = "1rem Arial";
+    ctx.fillText("Undertale", canvas.width/2, canvas.height/2 + 20);
 
     //Game press enter font
     let count = 1000;
@@ -33,7 +33,7 @@ let handle = setInterval(startPage, 1200);
 function clearCanvas(){
     clearInterval(handle);
     ctx.clearRect(0, 0, 640, 360);
-    body.style.backgroundImage = "url('./images/background0.png')"    
+    body.style.backgroundImage = "url('./images/background1.gif')"    
 }
 
 // upon pressing Enter game clears startpage and starts
@@ -41,6 +41,7 @@ function enterGame(e){
     if(e.keyCode === 13) {
         clearCanvas();
         Start();
+        auto.volume = 0.05
         auto.play();
     }  
 }
@@ -64,6 +65,7 @@ class Player {
         this.originalHeight = height;
         this.grounded = false;
         this.jumpTimer = 0;
+
         this.dog = new Image();
         this.dog.src = './images/dog1.png'
 
@@ -107,7 +109,7 @@ class Player {
      }
     }
     Draw () {
-        ctx.drawImage(this.dog, this.x, this.y, this.width, this.height)
+     ctx.drawImage(this.dog,this.x,this.y,this.width, this.height)
     }
 }
 
@@ -119,6 +121,9 @@ class Obstacle {
        this.height = height;
        this.color = color;
        this.directionX = -gameSpeed;
+       
+       this.cov = new Image();
+       this.cov.src = "./images/cov.png"
     }
     Update () {
         this.x += this.directionX;
@@ -126,13 +131,29 @@ class Obstacle {
         this.directionX = -gameSpeed;
     }
     Draw () {
-         ctx.beginPath();
-         ctx.shadowColor="grey";
-         ctx.shadowBlur=1;
-         ctx.lineWidth=3;
-         ctx.fillStyle = this.color;
-         ctx.fillRect(this.x, this.y, this.width, this.height)
-         ctx.closePath();
+         ctx.drawImage(this.cov,this.x, this.y, this.width, this.height)
+    }
+}
+
+class Obstacle2 {
+    constructor(x,y,width,height,color){
+       this.x = x;
+       this.y = y;
+       this.width = width;
+       this.height = height;
+       this.color = color;
+       this.directionX = -gameSpeed;
+       
+       this.bat = new Image();
+       this.bat.src = "./images/bat.png"
+    }
+    Update () {
+        this.x += this.directionX;
+        this.Draw();
+        this.directionX = -gameSpeed;
+    }
+    Draw () {
+         ctx.drawImage(this.bat,this.x, this.y, this.width, this.height)
     }
 }
 
@@ -175,20 +196,24 @@ class Instructions {
 //Game Functions
      //Spawn Obstacles
 function SpawnObstacle () {
-    let size = RandomIntRange(20, 100); // random size of the spawned obstacle
+    let size = RandomIntRange(45, 100); // random size of the spawned obstacle
     let type = RandomIntRange(0,2);
-    let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#FB4D3D");
+  
+       
+   
+    let obstacle = new Obstacle( canvas.width + size, canvas.height - size, size, size, "#FB4D3D");
     let obstacle2 = new Obstacle(canvas.width + size + 400, canvas.height - size, size, size, "#EAC435");
+    let obstacle3 = new Obstacle2(canvas.width + size + 800, canvas.height - 250, size, size, "#EAC435");
     if(type == 1) {
         obstacle.y -= player.originalHeight - 10; //Obstacles that can be ducked
     }
     if(type == 2) {
-        obstacles.push(obstacle2)
+        obstacles.push(obstacle2, obstacle3)
     }
     obstacles.push(obstacle);
 }
 function RandomIntRange(min, max) {
-    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (20, 100)
+    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (40, 100)
 }
 // upon Start draw the player and all other features to the canvas
 function Start () {
@@ -205,18 +230,18 @@ function Start () {
 
     player = new Player(200, 0, 50, 50, "#FF5858");
 
-    scoreText = new Score("Score: " + scoreText, canvas.width - 400, 28, "left", "#212121","20")
+    scoreText = new Score("Score: " + scoreText, canvas.width - 400, 28, "left", "white","20")
 
-    highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 28, "right", "#212121", "20");
+    highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 28, "right", "white", "20");
     
-    playInstructions = new Instructions("Jump = UpArrow",canvas.width - 700, 28, "left", "red", "20");
+    playInstructions = new Instructions("Jump = UpArrow",canvas.width - 700, 28, "left", "white", "15");
 
-    playInstructions2 = new Instructions("Duck = DownArrow",canvas.width - 700, 53, "left", "red", "20");
+    playInstructions2 = new Instructions("Duck = DownArrow",canvas.width - 700, 53, "left", "white", "15");
     requestAnimationFrame(Update);
 }
 
 //Update animation frame & clear canvas upon change
-let initialSpawnTimer = 200;
+let initialSpawnTimer = 240;
 let spawnTimer = initialSpawnTimer;
 
 function Update () {
@@ -224,7 +249,7 @@ function Update () {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     spawnTimer--;
-    if(spawnTimer <= 0){
+    if(spawnTimer <= 1){
         SpawnObstacle();
         console.log(obstacles)
         spawnTimer = initialSpawnTimer - gameSpeed * 8;
@@ -248,7 +273,8 @@ function Update () {
          gameSpeed = 5;
          //Store the highscore in local storage upon collision
          window.localStorage.setItem("highscore", highscore);
-         window.alert("Game Over (press OK to restart)") 
+         window.alert("Game Over") 
+         
      }
        o.Update();
     }
