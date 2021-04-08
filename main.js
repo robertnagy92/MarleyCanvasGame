@@ -34,7 +34,6 @@ let handle = setInterval(startPage, 1200);
 function clearCanvas(){
     clearInterval(handle);
     ctx.clearRect(0, 0, 640, 360);
-    // body.style.background = "skyblue";
     body.style.backgroundImage = "url('./images/background0.png')"    
 }
 
@@ -44,7 +43,7 @@ function enterGame(e){
         clearCanvas();
         Start();
         auto.play();
-    }
+    }  
 }
 document.onkeydown = enterGame;
 
@@ -62,13 +61,11 @@ class Player {
         this.height = height;
         this.color = color;
 
-        this.directionY = 0; // Jump velocity
+        this.directionY = 0; // Jump velocity, jump speed in a direction
         this.jumpForce = 16;
         this.originalHeight = height;
         this.grounded = false;
         this.jumpTimer = 0;
-    
-    
     }
 
     Animate () {
@@ -96,8 +93,7 @@ class Player {
          this.grounded = true;
          this.y = canvas.height - this.height
      }
-
-        this.Draw();
+       this.Draw();
     }
 
    //Jump height, longer keypress generates more jumpforce
@@ -177,31 +173,26 @@ class Instructions {
     }
 }
 //Game Functions
-//Spawn Obstacles
+     //Spawn Obstacles
 function SpawnObstacle () {
     let size = RandomIntRange(20, 100); // random size of the spawned obstacle
-    // console.log(size);
     let type = RandomIntRange(0,2);
     let obstacle = new Obstacle(canvas.width + size, canvas.height - size, size, size, "#2484E4" );
     if(type == 1) {
-        obstacle.y -= player.originalHeight - 10;
+        obstacle.y -= player.originalHeight - 10; //Obstacles that can be ducked
     }
     obstacles.push(obstacle);
 }
-
 function RandomIntRange(min, max) {
-    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (20, 70)
+    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (20, 100)
 }
-// upon Start draw the player to the canvas
+// upon Start draw the player and all other features to the canvas
 function Start () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
     ctx.font = "20px sans-serif";
-
     gameSpeed = 3;
     gravity = 1;
-
     score = 0;
     highscore = 0;
     if(localStorage.getItem("highscore")){
@@ -215,10 +206,9 @@ function Start () {
     highscoreText = new Score("Highscore " + highscore, canvas.width - 30, 28, "right", "#212121", "20");
     
     playInstructions = new Instructions("Jump = UpArrow",canvas.width - 700, 28, "left", "red", "20");
+
     playInstructions2 = new Instructions("Duck = DownArrow",canvas.width - 700, 53, "left", "red", "20");
     requestAnimationFrame(Update);
-
-
 }
 
 //Update animation frame & clear canvas upon change
@@ -226,7 +216,6 @@ let initialSpawnTimer = 200;
 let spawnTimer = initialSpawnTimer;
 
 function Update () {
-
     requestAnimationFrame(Update);
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -240,16 +229,14 @@ function Update () {
           spawnTimer = 60;
       }
     }
-
     //Spawn obstacles
     for(let i = 0; i < obstacles.length; i++){
         let o = obstacles[i]
-
     //Collision detection
      if(o.x + o.width < 0){
          obstacles.splice(i,1);
      }    
-
+     
      if(player.x < o.x + o.width && player.x + player.width > o.x && player.y < o.y + o.height && player.y + player.height > o.y){
          obstacles = [];
          score = 0;
