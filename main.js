@@ -199,7 +199,7 @@ class Instructions {
 //Game Functions
      //Spawn Obstacles
 function SpawnObstacle () {
-    let size = RandomIntRange(35, 120); // random size of the spawned obstacle
+    let size = RandomIntRange(35, 105); // random size of the spawned obstacle
     let type = RandomIntRange(0,2);
   
        
@@ -223,7 +223,7 @@ function Start () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     ctx.font = "20px sans-serif";
-    gameSpeed = 1;
+    gameSpeed = 2;
     gravity = 1;
     score = 0;
     highscore = 0;
@@ -273,7 +273,7 @@ function Update () {
          obstacles = [];
          score = 0;
          spawnTimer = initialSpawnTimer;
-         gameSpeed = 1;
+         gameSpeed = 2;
          //Store the highscore in local storage upon collision
          window.localStorage.setItem("highscore", highscore);
          ctx.clearRect(0, 0, 640, 360);
@@ -298,7 +298,7 @@ function Update () {
     playInstructions.Draw();
     playInstructions2.Draw();
 
-    gameSpeed += 0.003; 
+    gameSpeed += 0.002; 
 }
 
 //Event Listeners
