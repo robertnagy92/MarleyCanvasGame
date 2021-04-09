@@ -3,6 +3,8 @@ let audio = document.getElementsByTagName("audio")
 let body = document.getElementById("main")
 let ctx = canvas.getContext("2d")
 let auto = document.getElementById('player')
+let endScreen = document.getElementById("modal")
+
 
 //Background page and emphasis on start game every second
 function startPage(){
@@ -28,6 +30,7 @@ function startPage(){
     ctx.fillText("Press Enter To Start", canvas.width/2, canvas.height/2 + 50);
     }
 }
+
 let handle = setInterval(startPage, 1200);
 // clearing canvas and setting new background image
 function clearCanvas(){
@@ -196,7 +199,7 @@ class Instructions {
 //Game Functions
      //Spawn Obstacles
 function SpawnObstacle () {
-    let size = RandomIntRange(45, 100); // random size of the spawned obstacle
+    let size = RandomIntRange(35, 120); // random size of the spawned obstacle
     let type = RandomIntRange(0,2);
   
        
@@ -213,14 +216,14 @@ function SpawnObstacle () {
     obstacles.push(obstacle);
 }
 function RandomIntRange(min, max) {
-    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (40, 100)
+    return Math.round(Math.random() * (max - min) + min); //Return a random number in the size variable, between (40, 120)
 }
 // upon Start draw the player and all other features to the canvas
 function Start () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     ctx.font = "20px sans-serif";
-    gameSpeed = 3;
+    gameSpeed = 1;
     gravity = 1;
     score = 0;
     highscore = 0;
@@ -270,11 +273,14 @@ function Update () {
          obstacles = [];
          score = 0;
          spawnTimer = initialSpawnTimer;
-         gameSpeed = 5;
+         gameSpeed = 1;
          //Store the highscore in local storage upon collision
          window.localStorage.setItem("highscore", highscore);
-         window.alert("Game Over") 
+         ctx.clearRect(0, 0, 640, 360);
+         body.style.backgroundImage = "url('./images/background0.png')"  
+         endScreen.style.display = "block";
          
+        
      }
        o.Update();
     }
@@ -302,6 +308,14 @@ document.addEventListener("keydown", function(event){
 document.addEventListener("keyup", function(event){
     keys[event.code] = false;
 })
+document.getElementById("btn").addEventListener("click", function() {
+    clearCanvas();
+    gameSpeed = 2;
+    Start();
+    auto.volume = 0.05;
+    endScreen.style.display = "none";
+    
+  });
 
 
 
